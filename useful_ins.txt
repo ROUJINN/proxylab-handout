@@ -6,3 +6,14 @@ proxy原来去年也没算分吗……19年选的ICS也没让做proxy 自己之�
 
 \# proxylab 相当于 IO+网络编程+并发编程+一点点cache 涉及知识点比较多但是和书上的样例代码基本没有区别 22-23学期在这个lab上给了非常充裕的时间, 可能把难度稀释了, 每天写写就行。如果需要在期末季把这个事情干完还是挺麻烦的，建议把精力主要用在思考“用书上的哪块代码能解决我现在遇到的问题”，除cache以外的代码真都在书上
 
+curl -v --proxy http://localhost:9000 http://localhost:8000/home.html
+
+curl -v http://localhost:8000/home.html
+
+make
+./proxy 9000
+
+./tiny 8000
+
+12 Hints
+4 Part I: Implementing a sequential web proxy
