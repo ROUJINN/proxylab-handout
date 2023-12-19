@@ -121,6 +121,8 @@ void doit(int fd) {
     sprintf(header, "%s %s HTTP/1.0\r\n",method,uri);
     build_header(&client_rio, header, host, port);
 
+    printf("header:\n%s",header);
+
     server_fd = Open_clientfd(host, port);
     
     Rio_readinitb(&server_rio, server_fd);

@@ -1,7 +1,6 @@
 proxy原来去年也没算分吗……19年选的ICS也没让做proxy 自己之前倒是做过一遍，体感的话sequential proxy很简单，基本上把tiny web的代码改一改就行；concurrency不难，单纯想应付课程的话直接临时派生线程就行，想卷一点可以预先创建线程池然后用生产者消费者模型管理（用教材提供的sbuf实现即可）；cache部分最难，需要自己想办法设计cache的结构，cacheline用什么匹配，以及写入和读取缓存的线程安全问题等等
 
 当然，如果想再卷理论上可以搞IO多路复用，毕竟教材最后一章也简单讲了select()，到这个程度的话就可以写在个人简历充当项目了
-
 其实ICS特别是贵校瓦房店版本的ICS，最尴尬的一点是评分重头是期末，但精华却是lab。如果自己在lab要求的基础上再增加点东西（比如tsh lab增加管道；proxy lab用IO多路复用），到时候投实习也可以写在简历里凑数。至于考试……不清楚这两年有没有改善，但之前的命题质量实在一言难尽
 
 \# proxylab 相当于 IO+网络编程+并发编程+一点点cache 涉及知识点比较多但是和书上的样例代码基本没有区别 22-23学期在这个lab上给了非常充裕的时间, 可能把难度稀释了, 每天写写就行。如果需要在期末季把这个事情干完还是挺麻烦的，建议把精力主要用在思考“用书上的哪块代码能解决我现在遇到的问题”，除cache以外的代码真都在书上
@@ -12,8 +11,23 @@ curl -v http://localhost:8000/home.html
 
 make
 ./proxy 9000
-
 ./tiny 8000
+
+./webdriver_test.py 9000 8000
+http://127.0.0.1.nip.io:8000/browser-testbench/index.html
+
+剩
+proxy-speed
+cache-concurrent
+cache-lru
+三个没过
+
+
+./driver.sh > 1.txt
+
+When you are struggling on realpage test, getting a visible webpage by the method stated in section
+9.4 and 9.5 may help.
 
 12 Hints
 4 Part I: Implementing a sequential web proxy
+

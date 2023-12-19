@@ -1,0 +1,66 @@
+*** Basic ***
+Starting tiny on 28919
+Starting proxy on 9051
+1: home.html
+   Fetching ./tiny/home.html into ./.proxy using the proxy
+   Fetching ./tiny/home.html into ./.noproxy directly from Tiny
+   Comparing the two files
+   Success: Files are identical.
+2: csapp.c
+   Fetching ./tiny/csapp.c into ./.proxy using the proxy
+   Fetching ./tiny/csapp.c into ./.noproxy directly from Tiny
+   Comparing the two files
+   Success: Files are identical.
+3: tiny.c
+   Fetching ./tiny/tiny.c into ./.proxy using the proxy
+   Fetching ./tiny/tiny.c into ./.noproxy directly from Tiny
+   Comparing the two files
+   Success: Files are identical.
+4: godzilla.jpg
+   Fetching ./tiny/godzilla.jpg into ./.proxy using the proxy
+   Fetching ./tiny/godzilla.jpg into ./.noproxy directly from Tiny
+   Comparing the two files
+   Success: Files are identical.
+5: tiny
+   Fetching ./tiny/tiny into ./.proxy using the proxy
+   Fetching ./tiny/tiny into ./.noproxy directly from Tiny
+   Comparing the two files
+   Success: Files are identical.
+Killing tiny and proxy
+Basic: 40 / 40
+
+*** Concurrency ***
+Starting tiny on port 25229
+Starting proxy on port 22904
+Starting the blocking NOP server on port 10956
+Trying to fetch a file from the blocking nop-server
+Fetching ./tiny/home.html into ./.noproxy directly from Tiny
+Fetching ./tiny/home.html into ./.proxy using the proxy
+Checking whether the proxy fetch succeeded
+Success: Was able to fetch tiny/home.html from the proxy.
+Killing tiny, proxy, and nop-server
+Concurrency: 15 / 15
+
+*** Cache ***
+Starting tiny on port 13173
+Starting proxy on port 28032
+Fetching ./tiny/tiny.c into ./.proxy using the proxy
+Fetching ./tiny/home.html into ./.proxy using the proxy
+Fetching ./tiny/csapp.c into ./.proxy using the proxy
+Killing tiny
+Fetching a cached copy of ./tiny/home.html into ./.noproxy
+Error: Fetch timed out after 5 seconds
+Failure: Was not able to fetch tiny/home.html from the proxy cache.
+Killing proxy
+Cache: 0 / 15
+
+*** Real Pages ***
+Starting proxy on port 4812
+Starting tiny on 25353
+Setup done, running webdriver
+= launching chrome 1702949109.1287959
+no display available. going headless.
+= loading page 1702949109.7911081
+url: http://127.0.0.1.nip.io:25353/browser-testbench/index.html
+title: Browser Testbench
+= running test 1702949110.4988487
