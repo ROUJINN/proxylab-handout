@@ -48,10 +48,9 @@ void init_cache() {
 
 /*成功则返回第几个line，失败返回-1*/
 int read_cache(char *url, int fd) {
-    check_cache(__LINE__);
+    //check_cache(__LINE__);
     
     P(&mutex);
-    printf("here\n");
     readcnt++;
     if (readcnt == 1) {
         P(&w);
@@ -92,13 +91,12 @@ void write_cache(char *object, int size, char *url) {
     }
     else {
         target_line = get_evict_line();
-        printf("target_line:%d\n",target_line);
         memcpy(cache[target_line]->payload, object, size);
         strcpy(cache[target_line]->url, url);
         cache[target_line]->time = cache_time;
         cache[target_line]->size = size;
     }
-    check_cache(__LINE__);
+    //check_cache(__LINE__);
     V(&w);
 }
 

@@ -45,20 +45,30 @@ int parse_url(char *url_in, char *host, char *port, char *uri) {
 void build_header(rio_t *client_rio, char *header, char *host, char *port) {
     char name[MAXLINE],data[MAXLINE],client_buf[MAXLINE];
     int has_host = 0;
-    while(Rio_readlineb(client_rio, client_buf, MAXLINE)) {
-        if (strcasecmp(client_buf, "\r\n")) {
+    int n = 1;
+    
+    while(n > 0) {
+        n = Rio_readlineb(client_rio, client_buf, MAXLINE);
+        printf("n:%d\n",n);
+        printf("-----\n%s\n-----\n",client_buf);
+        
+        if (!strcasecmp(client_buf, "\r\n")) {
             break;
         }
-        scanf(client_buf,"%s %s",name,data);
-        if (!strcasecmp(name,"Host:")) {
+        
+        sscanf(client_buf,"%s %s",name,data);
+        
+        if (strcasecmp(name,"Host:") == 0) {
             strcat(header, client_buf);
             has_host = 1;
+            continue;
         }
         if (strcasecmp(name,"User-Agent:") && strcasecmp(name,"Connection:") && strcasecmp(name,"Proxy-Connection:")) {
+            
             strcat(header, client_buf);
         }
     }
-    if (!has_host) {
+    if (has_host == 0) {
         sprintf(header, "%sHost: %s:%s\r\n", header, host, port);
     }
     strcat(header, user_agent_hdr);
@@ -101,7 +111,7 @@ void doit(int fd) {
     char client_buf[MAXLINE], server_buf[MAXLINE];
     char method[MAXLINE], url[MAXLINE], version[MAXLINE]; 
     char host[MAXLINE], port[MAXLINE], uri[MAXLINE];
-    char header[MAXLINE]; 
+    char header[10*MAXLINE]; 
     char object[MAX_OBJECT_SIZE];  
 
     Rio_readinitb(&client_rio, fd);
@@ -115,23 +125,18 @@ void doit(int fd) {
         return;
     }
 
-    printf("url:%s\n",url);
-
     int target_line = read_cache(url,fd);
-
-    printf("tar:%d\n",target_line);
 
     if (target_line != -1) {
         return; /*已经传完了，直接返回*/
     }
-    printf("------here----------\n");
 
     parse_url(url,host,port,uri);
 
     sprintf(header, "%s %s HTTP/1.0\r\n",method,uri);
     build_header(&client_rio, header, host, port);
 
-    printf("connecting with header:\n%s",header); /*for debug*/
+    printf("????? header:\n%s",header); /*for debug*/
 
     server_fd = Open_clientfd(host, port);
     
@@ -142,17 +147,15 @@ void doit(int fd) {
     int n,size;
     int need_write = 1;
     while (n = Rio_readnb(&server_rio, server_buf, MAXLINE)) {
-        
+        Rio_writen(fd, server_buf, n);
         if (size + n > MAX_OBJECT_SIZE) {
             need_write = 0;
         }
         if (need_write) {
             memcpy(object+size,server_buf,n);
         }
-        size += n;
-        Rio_writen(fd, server_buf, n);
+        size += n; /*注意这个要放在上一行的下面*/
     }
-    printf("ppppppppppppppp%s\n",object);
     if (need_write) {
         write_cache(object, size, url);
     }
@@ -175,7 +178,6 @@ int main (int argc, char **argv) {
     signal(SIGCHLD, sigchld_handler);
 
     int listenfd, *connfdp;
-    char hostname[MAXLINE], port[MAXLINE];
     socklen_t clientlen;
     struct sockaddr_storage clientaddr;
     pthread_t tid;
