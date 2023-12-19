@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include "csapp.h"
-
-/* Recommended max cache and object sizes */
-#define MAX_CACHE_SIZE 1049000
-#define MAX_OBJECT_SIZE 102400
+#include "cache.h"
 
 /* You won't lose style points for including this long line in your code */
 static const char *user_agent_hdr = "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:10.0.3) Gecko/20120305 Firefox/10.0.3\r\n";
@@ -15,8 +12,10 @@ void sigchld_handler(int sig) { // reap all children
 }
 
 /*如果成功，返回0，否则为-1*/
-int parse_url(char *url, char *host, char *port, char *uri) {
+int parse_url(char *url_in, char *host, char *port, char *uri) {
     /*http://localhost:8000/home.html*/
+    char url[MAXLINE];
+    strcpy(url,url_in);
     char *p1 = strstr(url,"//");
     if (p1 == NULL) {
         return -1;
@@ -103,7 +102,7 @@ void doit(int fd) {
     char method[MAXLINE], url[MAXLINE], version[MAXLINE]; 
     char host[MAXLINE], port[MAXLINE], uri[MAXLINE];
     char header[MAXLINE]; 
-    //char object[MAX_OBJECT_SIZE];  
+    char object[MAX_OBJECT_SIZE];  
 
     Rio_readinitb(&client_rio, fd);
     Rio_readlineb(&client_rio, client_buf, MAXLINE);
@@ -116,12 +115,23 @@ void doit(int fd) {
         return;
     }
 
+    printf("url:%s\n",url);
+
+    int target_line = read_cache(url,fd);
+
+    printf("tar:%d\n",target_line);
+
+    if (target_line != -1) {
+        return; /*已经传完了，直接返回*/
+    }
+    printf("------here----------\n");
+
     parse_url(url,host,port,uri);
 
     sprintf(header, "%s %s HTTP/1.0\r\n",method,uri);
     build_header(&client_rio, header, host, port);
 
-    printf("header:\n%s",header);
+    printf("connecting with header:\n%s",header); /*for debug*/
 
     server_fd = Open_clientfd(host, port);
     
@@ -129,9 +139,22 @@ void doit(int fd) {
     Rio_writen(server_fd, header, strlen(header));
 
      /*貌似也可以直接用Rio_readn，这里有个bug十分隐晦，不能写strlen(server_buf)，因为为0*/
-    ssize_t n;
+    int n,size;
+    int need_write = 1;
     while (n = Rio_readnb(&server_rio, server_buf, MAXLINE)) {
+        
+        if (size + n > MAX_OBJECT_SIZE) {
+            need_write = 0;
+        }
+        if (need_write) {
+            memcpy(object+size,server_buf,n);
+        }
+        size += n;
         Rio_writen(fd, server_buf, n);
+    }
+    printf("ppppppppppppppp%s\n",object);
+    if (need_write) {
+        write_cache(object, size, url);
     }
 
     Close(server_fd);
@@ -140,7 +163,7 @@ void doit(int fd) {
 void *thread(void *vargp) {
     int connfd = *((int *)vargp);
     Pthread_detach(pthread_self());
-    Free(vargp);
+    Free(vargp); /*释放malloc的*/
     doit(connfd);
     Close(connfd);
     return NULL;
@@ -163,6 +186,8 @@ int main (int argc, char **argv) {
     }
 
     listenfd = open_listenfd(argv[1]);
+    init_cache();
+
     while (1) {
         clientlen = sizeof(clientaddr);
         connfdp = Malloc(sizeof(int));
@@ -170,5 +195,7 @@ int main (int argc, char **argv) {
 
         Pthread_create(&tid, NULL, thread, connfdp);                                     
     }
+
+    free_cache();
 }
 

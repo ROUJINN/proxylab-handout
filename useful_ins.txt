@@ -9,6 +9,8 @@ curl -v --proxy http://localhost:9000 http://localhost:8000/home.html
 
 curl -v http://localhost:8000/home.html
 
+curl -v http://localhost:9000/home.html
+
 make
 ./proxy 9000
 ./tiny 8000
@@ -31,3 +33,10 @@ When you are struggling on realpage test, getting a visible webpage by the metho
 12 Hints
 4 Part I: Implementing a sequential web proxy
 
+/usr/bin/ld: 
+cache.o:/home/u2200011351/lab/proxylab-handout/cache.h:13: 
+
+multiple definition of `cache'; 
+
+proxy.o:/home/u2200011351/lab/proxylab-handout/cache.h:13:
+first defined here
