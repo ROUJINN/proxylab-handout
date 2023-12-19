@@ -120,7 +120,6 @@ void doit(int fd) {
 
     sprintf(header, "%s %s HTTP/1.0\r\n",method,uri);
     build_header(&client_rio, header, host, port);
-    printf("!!!%s",header);
 
     server_fd = Open_clientfd(host, port);
     
@@ -136,16 +135,25 @@ void doit(int fd) {
     Close(server_fd);
 }
 
+void *thread(void *vargp) {
+    int connfd = *((int *)vargp);
+    Pthread_detach(pthread_self());
+    Free(vargp);
+    doit(connfd);
+    Close(connfd);
+    return NULL;
+}
 
 /*作为一个server，监听client来的连接请求，并且建立连接*/
 int main (int argc, char **argv) {
     signal(SIGPIPE, SIG_IGN);
     signal(SIGCHLD, sigchld_handler);
 
-    int listenfd, connfd;
+    int listenfd, *connfdp;
     char hostname[MAXLINE], port[MAXLINE];
     socklen_t clientlen;
     struct sockaddr_storage clientaddr;
+    pthread_t tid;
 
     if (argc != 2) {
 	    fprintf(stderr, "usage: %s <port>\n", argv[0]);
@@ -155,11 +163,10 @@ int main (int argc, char **argv) {
     listenfd = open_listenfd(argv[1]);
     while (1) {
         clientlen = sizeof(clientaddr);
-        connfd = accept(listenfd, (SA *)&clientaddr, &clientlen); 
-        getnameinfo((SA *) &clientaddr, clientlen, hostname, MAXLINE, 
-                        port, MAXLINE, 0);
-        doit(connfd);                     
-        close(connfd);                                         
+        connfdp = Malloc(sizeof(int));
+        *connfdp = accept(listenfd, (SA *)&clientaddr, &clientlen); 
+
+        Pthread_create(&tid, NULL, thread, connfdp);                                     
     }
 }
 
