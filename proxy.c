@@ -49,8 +49,6 @@ void build_header(rio_t *client_rio, char *header, char *host, char *port) {
     
     while(n > 0) {
         n = Rio_readlineb(client_rio, client_buf, MAXLINE);
-        printf("n:%d\n",n);
-        printf("-----\n%s\n-----\n",client_buf);
         
         if (!strcasecmp(client_buf, "\r\n")) {
             break;
@@ -64,7 +62,6 @@ void build_header(rio_t *client_rio, char *header, char *host, char *port) {
             continue;
         }
         if (strcasecmp(name,"User-Agent:") && strcasecmp(name,"Connection:") && strcasecmp(name,"Proxy-Connection:")) {
-            
             strcat(header, client_buf);
         }
     }
@@ -136,7 +133,7 @@ void doit(int fd) {
     sprintf(header, "%s %s HTTP/1.0\r\n",method,uri);
     build_header(&client_rio, header, host, port);
 
-    printf("????? header:\n%s",header); /*for debug*/
+    //printf("????? header:\n%s",header); /*for debug*/
 
     server_fd = Open_clientfd(host, port);
     
@@ -146,7 +143,7 @@ void doit(int fd) {
      /*貌似也可以直接用Rio_readn，这里有个bug十分隐晦，不能写strlen(server_buf)，因为为0*/
     int n,size;
     int need_write = 1;
-    while (n = Rio_readnb(&server_rio, server_buf, MAXLINE)) {
+    while ((n = Rio_readnb(&server_rio, server_buf, MAXLINE)) != 0) {
         Rio_writen(fd, server_buf, n);
         if (size + n > MAX_OBJECT_SIZE) {
             need_write = 0;
