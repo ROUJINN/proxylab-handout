@@ -143,7 +143,7 @@ void doit(int fd) {
      /*貌似也可以直接用Rio_readn，这里有个bug十分隐晦，不能写strlen(server_buf)，因为为0*/
     int n,size;
     int need_write = 1;
-    while ((n = Rio_readnb(&server_rio, server_buf, MAXLINE)) != 0) {
+    while ((n = rio_readnb(&server_rio, server_buf, MAXLINE)) != 0) {
         Rio_writen(fd, server_buf, n);
         if (size + n > MAX_OBJECT_SIZE) {
             need_write = 0;
