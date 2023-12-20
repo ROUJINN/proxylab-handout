@@ -1,6 +1,6 @@
 *** Basic ***
-Starting tiny on 29724
-Starting proxy on 33423
+Starting tiny on 26795
+Starting proxy on 10627
 1: home.html
    Fetching ./tiny/home.html into ./.proxy using the proxy
    Fetching ./tiny/home.html into ./.noproxy directly from Tiny
@@ -30,9 +30,9 @@ Killing tiny and proxy
 Basic: 40 / 40
 
 *** Concurrency ***
-Starting tiny on port 22713
-Starting proxy on port 6571
-Starting the blocking NOP server on port 32212
+Starting tiny on port 27580
+Starting proxy on port 17512
+Starting the blocking NOP server on port 6791
 Trying to fetch a file from the blocking nop-server
 Fetching ./tiny/home.html into ./.noproxy directly from Tiny
 Fetching ./tiny/home.html into ./.proxy using the proxy
@@ -42,8 +42,8 @@ Killing tiny, proxy, and nop-server
 Concurrency: 15 / 15
 
 *** Cache ***
-Starting tiny on port 2595
-Starting proxy on port 10393
+Starting tiny on port 5928
+Starting proxy on port 9672
 Fetching ./tiny/tiny.c into ./.proxy using the proxy
 Fetching ./tiny/home.html into ./.proxy using the proxy
 Fetching ./tiny/csapp.c into ./.proxy using the proxy
@@ -54,21 +54,21 @@ Killing proxy
 Cache: 15 / 15
 
 *** Real Pages ***
-Starting proxy on port 16980
-Starting tiny on 33352
+Starting proxy on port 2044
+Starting tiny on 4660
 Setup done, running webdriver
-= launching chrome 1702992039.0058699
+= launching chrome 1702992621.5418994
 no display available. going headless.
-= loading page 1702992039.6627336
-url: http://127.0.0.1.nip.io:33352/browser-testbench/index.html
+= loading page 1702992622.1767066
+url: http://127.0.0.1.nip.io:4660/browser-testbench/index.html
 title: Browser Testbench
-= running test 1702992040.2688801
-= retrieving score 1702992052.1991472
+= running test 1702992622.7824667
+= retrieving score 1702992634.721026
 passed tests reported by browser: 9
 so you get 18 score
 Log:
  
-= finished 1702992052.2861545
+= finished 1702992634.7966251
 Killing tiny and proxy
 Real Pages: 18 / 18
 

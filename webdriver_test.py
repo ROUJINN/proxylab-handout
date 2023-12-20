@@ -32,6 +32,7 @@ opt.add_argument('--disable-dev-shm-usage')
 opt.add_argument('--proxy-server=127.0.0.1:%s'%proxy_port)
 opt.add_argument('--proxy-bypass-list=*.google.com') # chrome will auto-connect accounts.google.com
 opt.add_argument('--user-agent=proxylab_test_'+('runner' if should_collect_score else 'manual'))
+opt.add_experimental_option("detach", True)
 driver=webdriver.Chrome(options=opt)
 
 print('= loading page',time.time())
